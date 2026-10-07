@@ -1,0 +1,69 @@
+{
+  "task": "logs-learn",
+  "condition": "skills-auto",
+  "role": "learn",
+  "error": null,
+  "timestamp": "2026-10-07T03:54:55.606225+00:00",
+  "skills_sha256": "bda1c32fab0210d0a300917401dbb456b3fc2a3e7299b6cc0f4f4f0d899e3061",
+  "seconds": 160.4,
+  "tokens": {
+    "input": 14432,
+    "output": 16426,
+    "total": 30858
+  },
+  "tool_calls": 2,
+  "subagent_calls": 0,
+  "skills_read": 0,
+  "skills_modified": false,
+  "final_message": "",
+  "score": 0.0,
+  "passed": 0,
+  "total": 9,
+  "checks": [
+    {
+      "name": "valid_structure",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_skills-auto_logs-learn_y5azjab9/workspace/errors.json'"
+    },
+    {
+      "name": "entry_count",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_skills-auto_logs-learn_y5azjab9/workspace/errors.json'"
+    },
+    {
+      "name": "timestamps_utc",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_skills-auto_logs-learn_y5azjab9/workspace/errors.json'"
+    },
+    {
+      "name": "exception_fields",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_skills-auto_logs-learn_y5azjab9/workspace/errors.json'"
+    },
+    {
+      "name": "repeat_counts",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_skills-auto_logs-learn_y5azjab9/workspace/errors.json'"
+    },
+    {
+      "name": "counts_by_service",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_skills-auto_logs-learn_y5azjab9/workspace/errors.json'"
+    },
+    {
+      "name": "rule_service_names",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_skills-auto_logs-learn_y5azjab9/workspace/errors.json'"
+    },
+    {
+      "name": "rule_sorted_errors",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_skills-auto_logs-learn_y5azjab9/workspace/errors.json'"
+    },
+    {
+      "name": "rule_schema_header",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_skills-auto_logs-learn_y5azjab9/workspace/errors.json'"
+    }
+  ]
+}
