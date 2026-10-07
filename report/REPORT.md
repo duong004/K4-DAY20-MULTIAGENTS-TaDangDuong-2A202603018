@@ -22,9 +22,19 @@
 
 ## 3. Làm quen Deep Agents (Phần 0.3)
 
-1.
-2.
-3.
+1. Tác tử mặc định có 9 công cụ:
+   - Nhóm thao tác tệp: `ls`, `read_file`, `write_file`, `edit_file`, `delete`, `glob`, `grep`.
+   - Nhóm thực thi shell: `execute`.
+   - Nhóm đa tác tử: `task`.
+   Công cụ cho phép chạy lệnh là `execute`.
+
+2. Mô tả của công cụ `task` về subagent `general-purpose`:
+   - Đây là tác tử đa năng dùng để nghiên cứu các câu hỏi phức tạp, tìm kiếm file/nội dung, và thực thi các chuỗi nhiệm vụ nhiều bước ("General-purpose agent for researching complex questions, searching for files and content, and executing multi-step tasks"). Nó có đầy đủ công cụ như tác tử chính.
+   - Về ngữ cảnh: Subagent hoạt động ở chế độ phi trạng thái (stateless); nó chỉ nhìn thấy prompt cụ thể được giao trong lượt gọi đó và trả về báo cáo cuối cùng ("the agent sees only the prompt you give it and returns a single final report"), hoàn toàn không nhìn thấy lịch sử hội thoại trước đó của tác tử chính (context isolation).
+
+3. Trích dẫn câu hướng dẫn hành vi:
+   - Từ mô tả công cụ `task`: *"Tell the agent whether to create content, analyze, or only research, since it can't necessarily see the user's intent unless it inherits your conversation, as noted per agent type below."*
+   - Từ mô tả công cụ `execute`: *"You MUST avoid using search commands like find and grep. Instead use the grep, glob tools to search. Use read_file rather than cat/head/tail."*
 
 ## 4. Đường cơ sở và phân loại lỗi (Phần 2.2)
 
