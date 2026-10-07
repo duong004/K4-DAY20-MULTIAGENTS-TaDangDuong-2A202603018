@@ -6,10 +6,16 @@ Chạy thật:   python -m lab.runner --condition baseline --tasks learn
 """
 import argparse
 import json
+import shutil
+import tempfile
+import time
+from datetime import datetime, timezone
 from pathlib import Path
 
+from langchain_core.callbacks import UsageMetadataCallbackHandler
 from langchain_core.messages import AIMessage, ToolMessage
 
+from .agent import build_agent
 from .grading import grade                                                      # có sẵn
 from .tasks import ROOT, get_task, hash_dir, list_tasks, prepare_sandbox         # có sẵn
 
@@ -65,7 +71,131 @@ def run_task(task_id: str, condition: str, results_dir="results", model=None, re
     Lỗi khi chạy tác tử KHÔNG được làm chương trình dừng: ghi vào `error` và vẫn chấm điểm.
     Sandbox là thư mục tạm NGOÀI kho mã nguồn và phải được xóa sau khi chạy.
     """
-    raise NotImplementedError("TODO 1: cài đặt run_task (xem guides/pseudocode/03_runner.md)")
+    if condition not in CONDITIONS:
+        raise KeyError(f"Unknown condition: {condition}")
+
+    cfg = CONDITIONS[condition]
+    task = get_task(task_id)
+    skills_dir = (ROOT / cfg["skills_dir"]) if cfg["skills_dir"] else None
+
+    out = Path(results_dir) / condition / task_id
+    out.mkdir(parents=True, exist_ok=True)
+
+    sandbox_dir = tempfile.mkdtemp(prefix=f"lab_{condition}_{task_id}_")
+    sandbox = Path(sandbox_dir)
+
+    record = {
+        "task": task_id,
+        "condition": condition,
+        "role": task.role,
+        "error": None,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+    try:
+        # 1. Chuẩn bị sandbox và đo hash ban đầu của thư mục skills
+        prepare_sandbox(task, sandbox, skills_dir)
+        hash_truoc = hash_dir(sandbox / "skills")
+        record["skills_sha256"] = hash_truoc
+
+        # 2. Khởi tạo tác tử và bộ theo dõi token
+        agent = build_agent(
+            sandbox,
+            mode=cfg["mode"],
+            use_skills=(skills_dir is not None),
+            model=model,
+        )
+        usage = UsageMetadataCallbackHandler()
+        t0 = time.perf_counter()
+
+        # 3. Chạy tác tử (bắt ngoại lệ để không làm sập runner)
+        try:
+            result = agent.invoke(
+                {"messages": [{"role": "user", "content": task.instruction}]},
+                config={"callbacks": [usage], "recursion_limit": recursion_limit},
+            )
+            messages = result.get("messages", [])
+            final = getattr(messages[-1], "content", "") if messages else ""
+            if not isinstance(final, str):
+                final = str(final)
+        except Exception as exc:
+            record["error"] = f"{type(exc).__name__}: {exc}"
+            messages = []
+            final = ""
+
+        t1 = time.perf_counter()
+        record["seconds"] = round(t1 - t0, 1)
+
+        # 4. Tính toán token từ usage metadata callback
+        in_tok = 0
+        out_tok = 0
+        tot_tok = 0
+        if hasattr(usage, "usage_metadata") and isinstance(usage.usage_metadata, dict):
+            for v in usage.usage_metadata.values():
+                if isinstance(v, dict):
+                    in_tok += v.get("input_tokens", 0)
+                    out_tok += v.get("output_tokens", 0)
+                    tot_tok += v.get("total_tokens", 0)
+        if tot_tok == 0 and (in_tok + out_tok) > 0:
+            tot_tok = in_tok + out_tok
+
+        record["tokens"] = {
+            "input": in_tok,
+            "output": out_tok,
+            "total": tot_tok,
+        }
+
+        # 5. Phân tích các tool calls ở luồng chính
+        calls = []
+        for m in messages:
+            if isinstance(m, AIMessage) and getattr(m, "tool_calls", None):
+                calls.extend(m.tool_calls)
+
+        record["tool_calls"] = len(calls)
+        record["subagent_calls"] = sum(1 for c in calls if c.get("name") == "task")
+
+        # 6. Đếm số skill khác nhau đã được đọc
+        skills_read_set = set()
+        for c in calls:
+            if c.get("name") == "read_file":
+                args = c.get("args")
+                if isinstance(args, str):
+                    try:
+                        args = json.loads(args)
+                    except Exception:
+                        args = {}
+                elif not isinstance(args, dict):
+                    args = {}
+
+                fp = args.get("file_path") or args.get("path") or ""
+                fp_norm = str(fp).replace("\\", "/")
+                if "skills/" in fp_norm:
+                    remainder = fp_norm.split("skills/", 1)[1].lstrip("/")
+                    parts = remainder.split("/")
+                    if parts and parts[0]:
+                        skills_read_set.add(parts[0])
+
+        record["skills_read"] = len(skills_read_set)
+        record["skills_modified"] = (hash_dir(sandbox / "skills") != hash_truoc)
+        record["final_message"] = final
+
+        # 7. Chấm điểm trên workspace đã bị tác tử thay đổi
+        g = grade(task, sandbox / "workspace")
+        record["score"] = g.get("score", 0.0)
+        record["passed"] = g.get("passed", 0)
+        record["total"] = g.get("total", 0)
+        record["checks"] = g.get("checks", [])
+
+        # 8. Ghi vết luồng chính ra trace.md
+        (out / "trace.md").write_text(render_trace(messages), encoding="utf-8")
+
+    finally:
+        # Xóa sạch sandbox tạm để không để lại rác trên hệ thống
+        shutil.rmtree(sandbox, ignore_errors=True)
+
+    # 9. Lưu kết quả chạy ra run.json
+    (out / "run.json").write_text(json.dumps(record, indent=2, ensure_ascii=False), encoding="utf-8")
+    return record
 
 
 def main(argv=None):
