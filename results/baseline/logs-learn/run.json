@@ -1,0 +1,69 @@
+{
+  "task": "logs-learn",
+  "condition": "baseline",
+  "role": "learn",
+  "error": null,
+  "timestamp": "2026-10-07T03:39:06.753646+00:00",
+  "skills_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "seconds": 131.6,
+  "tokens": {
+    "input": 12718,
+    "output": 16422,
+    "total": 29140
+  },
+  "tool_calls": 2,
+  "subagent_calls": 0,
+  "skills_read": 0,
+  "skills_modified": false,
+  "final_message": "",
+  "score": 0.0,
+  "passed": 0,
+  "total": 9,
+  "checks": [
+    {
+      "name": "valid_structure",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_baseline_logs-learn_ekbnomej/workspace/errors.json'"
+    },
+    {
+      "name": "entry_count",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_baseline_logs-learn_ekbnomej/workspace/errors.json'"
+    },
+    {
+      "name": "timestamps_utc",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_baseline_logs-learn_ekbnomej/workspace/errors.json'"
+    },
+    {
+      "name": "exception_fields",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_baseline_logs-learn_ekbnomej/workspace/errors.json'"
+    },
+    {
+      "name": "repeat_counts",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_baseline_logs-learn_ekbnomej/workspace/errors.json'"
+    },
+    {
+      "name": "counts_by_service",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_baseline_logs-learn_ekbnomej/workspace/errors.json'"
+    },
+    {
+      "name": "rule_service_names",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_baseline_logs-learn_ekbnomej/workspace/errors.json'"
+    },
+    {
+      "name": "rule_sorted_errors",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_baseline_logs-learn_ekbnomej/workspace/errors.json'"
+    },
+    {
+      "name": "rule_schema_header",
+      "passed": false,
+      "detail": "FileNotFoundError: [Errno 2] No such file or directory: '/tmp/lab_baseline_logs-learn_ekbnomej/workspace/errors.json'"
+    }
+  ]
+}
