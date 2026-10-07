@@ -12,13 +12,11 @@
 - Số lần chạy tác vụ đã dùng / ngân sách:
 - Commit của tag `freeze`:
 
-## 2. Giả thuyết (commit TRƯỚC tag `freeze`, Phần 4.0)
+## 2. Giả thuyết (commit TRƯỚC tag freeze, Phần 4.0)
 
-> Dự đoán điều kiện nào đạt điểm cao nhất trên **tác vụ đánh giá** và vì sao. Nêu căn cứ từ phân loại lỗi (mục 4) và từ tài liệu tham khảo. Điền cả ba dòng; `verify_freeze.py` kiểm tra điều này.
-
-- H1 (subagents so với baseline):
-- H2 (skills-auto so với baseline):
-- H3 (tác vụ học so với tác vụ đánh giá):
+- H1 (subagents so với baseline): Trên tác vụ đánh giá, điều kiện subagents sẽ không vượt trội hơn baseline về điểm số, thậm chí có thể đạt điểm thấp hơn, nhưng chi phí token sẽ cao hơn đáng kể (gấp 2-5 lần). Căn cứ: Kết quả thực nghiệm trên tập học cho thấy hiện tượng cô lập ngữ cảnh (context isolation) khiến tác tử chính không truyền đạt đầy đủ các ràng buộc cho subagent (điểm code-learn giảm từ 5/10 xuống 0/10); đồng thời ở data-learn, việc phân công qua lại giữa các subagent dẫn đến bế tắc và chạm trần đệ quy (GraphRecursionError, tiêu tốn hơn 400.000 token). Đối với các bài toán ngắn và tập trung, chi phí overhead phối hợp lớn hơn lợi ích chuyên biệt hóa.
+- H2 (skills-auto so với baseline): Trên tác vụ đánh giá, skills-auto sẽ cải thiện nhẹ điểm số so với baseline ở các quy ước tổ chức cũ lặp lại từ tập học (như định dạng ISO UTC, cấu trúc file clean.csv, checklist hồi quy), nhưng sẽ không giải quyết được quy ước tổ chức MỚI riêng biệt của tập đánh giá và các lỗi logic nghiệp vụ phức tạp. Căn cứ: Theo các nghiên cứu SkillsBench và SkillEvolBench, kỹ năng do mô hình tự sinh có xu hướng quá khớp (overfitting) với ngữ cảnh quan sát được và khó tổng quát hóa nếu không có phản hồi lặp lại; trên tập học, skills-auto đã giúp data-learn tăng từ 1/8 lên 2/8 nhờ định dạng đầu ra, nhưng detail trên tập eval hoàn toàn rỗng nên agent không thể tự hiệu chỉnh thêm.
+- H3 (tác vụ học so với tác vụ đánh giá): Điểm trung bình của tất cả các điều kiện trên tác vụ đánh giá sẽ thấp hơn so với tác vụ học. Căn cứ: Tác vụ đánh giá sử dụng dữ liệu mới chưa từng thấy, không cung cấp phản hồi chi tiết (detail luôn rỗng) và bổ sung thêm quy ước tổ chức mới mà tác tử chưa từng được học; agent phải dựa hoàn toàn vào khả năng zero-shot và các chỉ dẫn tổng quát mà không có cơ chế học từ lỗi sai.
 
 ## 3. Làm quen Deep Agents (Phần 0.3)
 
